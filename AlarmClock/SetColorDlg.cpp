@@ -104,7 +104,7 @@ void SetColorDlg::OnBnClickedOkbtn()
 	WritePrivateProfileString(_T("font"), _T("italic"), italic, CGlobal::inipath);
 	WritePrivateProfileString(_T("font"), _T("unline"), unline, CGlobal::inipath);
 	WritePrivateProfileString(_T("font"), _T("delline"), delline, CGlobal::inipath);
-	EndDialog(1);
+	//EndDialog(1);
 }
 
 
@@ -171,6 +171,6 @@ BOOL SetColorDlg::OnInitDialog()
 	m_unline.SetCheck(CGlobal::font_unline);
 	m_delline.SetCheck(CGlobal::font_delline);
 	WinOK = TRUE;
-	//OnPreview();
+	OnPreview();
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
