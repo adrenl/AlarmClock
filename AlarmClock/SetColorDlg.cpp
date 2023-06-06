@@ -5,7 +5,7 @@
 #include "AlarmClock.h"
 #include "afxdialogex.h"
 #include "SetColorDlg.h"
-
+extern bool WinOK = FALSE;
 
 // SetColorDlg 对话框
 
@@ -53,6 +53,7 @@ END_MESSAGE_MAP()
 
 
 void SetColorDlg::OnPreview() {
+	if (WinOK == FALSE) return;
 	CFont prefont;
 	CMFCFontInfo* pInfoFont = m_fontname.GetSelFont();
 	CString fontsize;
@@ -65,8 +66,8 @@ void SetColorDlg::OnPreview() {
 		GetDlgItem(IDC_FONTSIZE)->GetWindowText(fontsize);
 		m_fontsize.EnableWindow(TRUE);
 	}
-	prefont.CreateFontW(_ttoi(fontsize), 0, 0, 0, (m_bold.GetCheck() == TRUE ? FW_BOLD : 0), m_italic.GetCheck(), m_unline.GetCheck(), m_delline.GetCheck(), ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, pInfoFont->m_strName);
-	m_preview.SetFont(&prefont, true);
+	//prefont.CreateFontW(_ttoi(fontsize), 0, 0, 0, (m_bold.GetCheck() == TRUE ? FW_BOLD : 0), m_italic.GetCheck(), m_unline.GetCheck(), m_delline.GetCheck(), ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, pInfoFont->m_strName);
+	//m_preview.SetFont(&prefont, true);
 }
 
 void SetColorDlg::OnBnClickedCancalbtn()
@@ -77,7 +78,33 @@ void SetColorDlg::OnBnClickedCancalbtn()
 
 void SetColorDlg::OnBnClickedOkbtn()
 {
-	
+	WinOK = FALSE;
+	CString fontsize;
+	CString bold;
+	CString italic;
+	CString unline;
+	CString delline;
+	CString autosize;
+	bold.Format(_T("%d"), CGlobal::BoolToInt(m_bold.GetCheck()));
+	italic.Format(_T("%d"), CGlobal::BoolToInt(m_italic.GetCheck()));
+	unline.Format(_T("%d"), CGlobal::BoolToInt(m_unline.GetCheck()));
+	delline.Format(_T("%d"), CGlobal::BoolToInt(m_delline.GetCheck()));
+	autosize.Format(_T("%d"), CGlobal::BoolToInt(m_autosetsize.GetCheck()));
+	if (m_autosetsize.GetCheck() == TRUE) {
+		fontsize = "12";
+	}
+	else {
+		GetDlgItem(IDC_FONTSIZE)->GetWindowText(fontsize);
+	}
+	CMFCFontInfo* pInfoFont = m_fontname.GetSelFont();
+	WritePrivateProfileString(_T("font"), _T("name"), pInfoFont->m_strName,CGlobal::inipath);
+	WritePrivateProfileString(_T("font"), _T("size"), fontsize, CGlobal::inipath);
+	WritePrivateProfileString(_T("font"), _T("autosize"), autosize, CGlobal::inipath);
+	WritePrivateProfileString(_T("font"), _T("bold"), bold, CGlobal::inipath);
+	WritePrivateProfileString(_T("font"), _T("italic"), italic, CGlobal::inipath);
+	WritePrivateProfileString(_T("font"), _T("unline"), unline, CGlobal::inipath);
+	WritePrivateProfileString(_T("font"), _T("delline"), delline, CGlobal::inipath);
+	EndDialog(1);
 }
 
 
@@ -131,4 +158,19 @@ void SetColorDlg::OnBnClickedDellinkchk()
 void SetColorDlg::OnBnClickedAutosetsize()
 {
 	OnPreview();
+}
+
+BOOL SetColorDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+	m_fontname.SetWindowTextW(CGlobal::font_name);
+	m_fontsize.SetWindowTextW(CGlobal::font_size);
+	m_autosetsize.SetCheck(CGlobal::font_sizeauto);
+	m_bold.SetCheck(CGlobal::font_sizeauto);
+	m_italic.SetCheck(CGlobal::font_italic);
+	m_unline.SetCheck(CGlobal::font_unline);
+	m_delline.SetCheck(CGlobal::font_delline);
+	WinOK = TRUE;
+	//OnPreview();
+	return TRUE;  // return TRUE unless you set the focus to a control
 }

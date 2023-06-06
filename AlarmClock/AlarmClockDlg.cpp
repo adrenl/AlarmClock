@@ -41,6 +41,24 @@ END_MESSAGE_MAP()
 
 // CAlarmClockDlg 消息处理程序
 
+void CAlarmClockDlg::LoadIni() {
+	GetPrivateProfileString(_T("font"),_T("name"),_T("Digital"),CGlobal::font_name.GetBuffer(MAX_PATH), MAX_PATH, CGlobal::inipath);
+	GetPrivateProfileString(_T("font"), _T("size"), _T("12"), CGlobal::font_size.GetBuffer(MAX_PATH), MAX_PATH, CGlobal::inipath);
+	CGlobal::font_sizeauto = CGlobal::IntToBool(GetPrivateProfileInt(_T("font"), _T("autosize"), 1, CGlobal::inipath));
+	CGlobal::font_bold = CGlobal::IntToBool(GetPrivateProfileInt(_T("font"), _T("bold"), 0, CGlobal::inipath));
+	CGlobal::font_italic = CGlobal::IntToBool(GetPrivateProfileInt(_T("font"), _T("italic"), 0, CGlobal::inipath));
+	CGlobal::font_unline = CGlobal::IntToBool(GetPrivateProfileInt(_T("font"), _T("unline"), 0, CGlobal::inipath));
+	CGlobal::font_delline = CGlobal::IntToBool(GetPrivateProfileInt(_T("font"), _T("delline"), 0, CGlobal::inipath));
+	SetTimer(ID_TIMER, 1000, 0);
+	GetClientRect(&m_rect);
+	if (CGlobal::font_sizeauto == true) {
+		//CAlarmClockDlg::OnSize(SIZE_RESTORED,200,200);
+	} else {
+		m_font.CreateFontW(_ttoi(CGlobal::font_size), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
+		m_time.SetFont(&m_font, true);
+	}
+}
+
 BOOL CAlarmClockDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -51,10 +69,7 @@ BOOL CAlarmClockDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
-	SetTimer(ID_TIMER, 1000, 0);
-	GetClientRect(&m_rect);
-	m_font.CreatePointFont(250, _T("Digital"), NULL);
-	m_time.SetFont(&m_font, true);
+	LoadIni();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -112,11 +127,16 @@ void CAlarmClockDlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 	if (nType == SIZE_MINIMIZED) return;
 	ChangeSize(IDC_TIME, cx, cy);
-	if (GetDlgItem(IDC_TIME) != NULL) {
+	if (GetDlgItem(IDC_TIME) != NULL && CGlobal::font_sizeauto==TRUE) {
+		if (m_font.m_hObject) m_font.DeleteObject();
+		m_font.CreateFontW(((cx+cy)*0.13), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
+		m_time.SetFont(&m_font, TRUE);
+	}
+	/*if (GetDlgItem(IDC_TIME) != NULL) {
 		if(m_font.m_hObject) m_font.DeleteObject();
 		m_font.CreatePointFont(((cx+cy) * 0.5), _T("Digital"), NULL);
 		m_time.SetFont(&m_font, true);
-	}
+	}*/
 }
 
 void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
@@ -129,7 +149,9 @@ void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmClockDlg::On32772()
 {
 	SetColorDlg doMode;
-	doMode.DoModal();
+	if (doMode.DoModal() == 1) {
+		LoadIni();
+	}
 }
 
 void CAlarmClockDlg::OnStnDblclickTime()

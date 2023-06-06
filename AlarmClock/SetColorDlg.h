@@ -45,4 +45,5 @@ public:
 	afx_msg void OnBnClickedDellinkchk();
 	afx_msg void OnBnClickedAutosetsize();
 	CButton m_delline;
+	virtual BOOL OnInitDialog();
 };
