@@ -132,9 +132,16 @@ void CAlarmClockDlg::On32772()
 	doMode.DoModal();
 }
 
-
 void CAlarmClockDlg::OnStnDblclickTime()
 {
 	CGlobal::showtitle = !CGlobal::showtitle;
-
+	if (CGlobal::showtitle) {
+		LONG IStyle = ::GetWindowLong(this->m_hWnd, GWL_STYLE);
+		::SetWindowLong(this->m_hWnd, GWL_STYLE, IStyle | WS_CAPTION);
+		::SetWindowPos(this->m_hWnd, NULL, 0, 0, 0, 0,SWP_NOSIZE| SWP_NOMOVE| SWP_NOZORDER| SWP_NOACTIVATE| SWP_FRAMECHANGED | SWP_FRAMECHANGED);
+	}else {
+		LONG IStyle = ::GetWindowLong(this->m_hWnd, GWL_STYLE);
+		::SetWindowLong(this->m_hWnd, GWL_STYLE, IStyle & ~WS_CAPTION);
+		::SetWindowPos(this->m_hWnd, NULL, 0, 0, 0, 0,SWP_NOSIZE| SWP_NOMOVE| SWP_NOZORDER| SWP_NOACTIVATE| SWP_FRAMECHANGED);
+	}
 }

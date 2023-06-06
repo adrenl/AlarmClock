@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include "CGlobal.h"
 #include "SetColorDlg.h"
 // CAlarmClockDlg 对话框
 class CAlarmClockDlg : public CDialogEx
@@ -35,9 +34,12 @@ public:
 	CFont m_font;
 	CRect m_rect;
 	CTime m_times;
+	bool isMouseDown;    //鼠标是否按下  
+
 	void ChangeSize(UINT nID, int x, int y);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void On32772();
 	afx_msg void OnStnDblclickTime();
+	void LoadIni();
 };

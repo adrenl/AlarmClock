@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "CGlobal.h"
-bool showtitle = true;
-CString font_name = _T("");
-CString font_size = 0;
-bool font_sizeauto = true;
-int text_color = 0;
-int background_color = 0;
+bool CGlobal::showtitle = TRUE;
+CString CGlobal::font_name;
+CString CGlobal::font_size;
+bool CGlobal::font_sizeauto;
+int CGlobal::text_color;
+int CGlobal::background_color;
 CGlobal::CGlobal()
 {
 }
