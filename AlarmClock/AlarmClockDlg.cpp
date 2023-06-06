@@ -43,18 +43,20 @@ END_MESSAGE_MAP()
 void CAlarmClockDlg::LoadIni() {
 	GetProfileStringW(_T("font"),_T("name"),_T("Digital"),CGlobal::font_name.GetBuffer(MAX_PATH), MAX_PATH);
 	GetProfileStringW(_T("font"), _T("size"), _T("12"), CGlobal::font_size.GetBuffer(MAX_PATH), MAX_PATH);
-	CGlobal::font_sizeauto = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("autosize"), 1));
+	CGlobal::font_autoajust = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("autosize"), 1));
 	CGlobal::font_bold = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("bold"), 0));
 	CGlobal::font_italic = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("italic"), 0));
 	CGlobal::font_unline = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("unline"), 0));
 	CGlobal::font_delline = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("delline"), 0));
+	CGlobal::text_color = theApp.GetProfileIntW(_T("color"), _T("text"), 0);
+	CGlobal::background_color = theApp.GetProfileIntW(_T("color"), _T("background"), 16776960);
 	int height= theApp.GetProfileIntW(_T("window"), _T("height"), 300);
 	int width= theApp.GetProfileIntW(_T("window"), _T("width"), 300);
 	int top = theApp.GetProfileIntW(_T("window"), _T("top"), 100);
 	int left = theApp.GetProfileIntW(_T("window"), _T("left"), 100);
 	::SetWindowPos(this->m_hWnd, NULL, left,top, width, height, NULL);
 	SetTimer(ID_TIMER, 1000, 0);
-	if (CGlobal::font_sizeauto == true) {
+	if (CGlobal::font_autoajust == true) {
 		SetTimer(99999, 500, NULL);
 	} else {
 		m_font.CreateFontW(_ttoi(CGlobal::font_size), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
@@ -130,7 +132,7 @@ void CAlarmClockDlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 	if (nType == SIZE_MINIMIZED) return;
 	ChangeSize(IDC_TIME, cx, cy);
-	if (GetDlgItem(IDC_TIME) != NULL && CGlobal::font_sizeauto==TRUE) {
+	if (GetDlgItem(IDC_TIME) != NULL && CGlobal::font_autoajust==TRUE) {
 		if (m_font.m_hObject) m_font.DeleteObject();
 		m_font.CreateFontW(((cx+cy)*0.13), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
 		m_time.SetFont(&m_font, TRUE);
@@ -142,10 +144,7 @@ void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent == 99999) {
 		CRect rect;
 		GetClientRect(rect);
-		ChangeSize(IDC_TIME, rect.Height(), rect.Width());/*
-		m_font.CreateFontW(((rect.Height() +rect.Width()) * 0.13), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
-		m_time.SetFont(&m_font, TRUE);
-		KillTimer(99999);*/
+		ChangeSize(IDC_TIME, rect.Height(), rect.Width());
 		CAlarmClockDlg::OnSize(0, rect.Width(), rect.Height());
 	}else{
 		m_times=CTime::GetCurrentTime();
@@ -156,7 +155,8 @@ void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmClockDlg::On32772()
 {
-	LoadIni();
+	SetShowDlg Mode;
+	if(Mode.DoModal()==1) LoadIni();
 }
 
 void CAlarmClockDlg::OnStnDblclickTime()

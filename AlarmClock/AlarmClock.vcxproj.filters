@@ -36,6 +36,9 @@
     <ClInclude Include="CGlobal.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SetShowDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmClock.cpp">
@@ -48,6 +51,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CGlobal.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SetShowDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
