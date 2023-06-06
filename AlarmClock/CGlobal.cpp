@@ -10,7 +10,6 @@ bool CGlobal::font_unline;
 bool CGlobal::font_delline;
 int CGlobal::text_color;
 int CGlobal::background_color;
-CString CGlobal::inipath = L".\\AlarmClock.ini";
 CGlobal::CGlobal()
 {
 }
@@ -24,14 +23,6 @@ bool CGlobal::IntToBool(int v) {
 		return TRUE;
 	}
 }
-/*int CGlobal::BoolToInt(bool v) {
-	if (v == TRUE) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}*/
 int CGlobal::BoolToInt(bool v)
 {
 	if (v == TRUE) {
