@@ -33,5 +33,7 @@ public:
 	afx_msg void On32772();
 	afx_msg void OnStnDblclickTime();
 	void LoadIni();
+	void savewin();
 	afx_msg void OnClose();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

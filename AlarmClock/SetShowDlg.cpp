@@ -34,15 +34,10 @@ BEGIN_MESSAGE_MAP(SetShowDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_OKBTN, &SetShowDlg::OnBnClickedOkbtn)
 	ON_BN_CLICKED(IDC_SETFONTBTN, &SetShowDlg::OnBnClickedSetfontbtn)
 END_MESSAGE_MAP()
-
-
 // SetShowDlg 消息处理程序
-
-
 BOOL SetShowDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	// TODO:  在此添加额外的初始化
 	memset(&SetShowDlg::slf, 0, sizeof(LOGFONT));
 	_tcscpy_s(SetShowDlg::slf.lfFaceName, LF_FACESIZE, CGlobal::font_name);
 	SetShowDlg::slf.lfHeight = _ttoi(CGlobal::font_size);
@@ -53,7 +48,7 @@ BOOL SetShowDlg::OnInitDialog()
 	m_bgcolor.SetColor(CGlobal::background_color);
 	m_textcolor.SetColor(CGlobal::text_color);
 	m_autoajust.SetCheck(CGlobal::font_autoajust);
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return TRUE;
 }
 
 
@@ -65,15 +60,17 @@ void SetShowDlg::OnBnClickedCanbtn()
 
 void SetShowDlg::OnBnClickedOkbtn()
 {
-	WriteProfileStringW(_T("font"),_T( "name"), SetShowDlg::slf.lfFaceName);
-	theApp.WriteProfileInt(_T("font"), _T("size"), SetShowDlg::slf.lfHeight);
-	theApp.WriteProfileInt(_T("font"), _T("bold"), CGlobal::BoolToInt(SetShowDlg::slf.lfWeight));
+	CString Size;
+	Size.Format(L"%d", SetShowDlg::slf.lfHeight);
+	theApp.WriteProfileStringW(_T("font"), _T("size"),Size) ;
+	theApp.WriteProfileInt(_T("font"), _T("bold"), CGlobal::BoolToInt(SetShowDlg::slf.lfWeight == 700 ? TRUE : FALSE));
 	theApp.WriteProfileInt(_T("font"), _T("italic"), CGlobal::BoolToInt(SetShowDlg::slf.lfItalic));
 	theApp.WriteProfileInt(_T("font"), _T("unline"), CGlobal::BoolToInt(SetShowDlg::slf.lfUnderline));
 	theApp.WriteProfileInt(_T("font"), _T("delline"), CGlobal::BoolToInt(SetShowDlg::slf.lfStrikeOut));
 	theApp.WriteProfileInt(_T("font"), _T("autoajust"), CGlobal::BoolToInt(m_autoajust.GetCheck()));
 	theApp.WriteProfileInt(_T("color"), _T("text"),m_textcolor.GetColor());
-	theApp.WriteProfileInt(_T("color"), _T("bakground"), m_bgcolor.GetColor());
+	theApp.WriteProfileInt(_T("color"), _T("background"), m_bgcolor.GetColor());
+	theApp.WriteProfileStringW(_T("font"), _T("name"), SetShowDlg::slf.lfFaceName);
 	EndDialog(1);
 }
 

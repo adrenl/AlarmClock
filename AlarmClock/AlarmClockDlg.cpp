@@ -35,19 +35,20 @@ BEGIN_MESSAGE_MAP(CAlarmClockDlg, CDialogEx)
 	ON_COMMAND(ID_32772, &CAlarmClockDlg::On32772)
 	ON_STN_DBLCLK(IDC_TIME, &CAlarmClockDlg::OnStnDblclickTime)
 	ON_WM_CLOSE()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
 // CAlarmClockDlg 消息处理程序
 
 void CAlarmClockDlg::LoadIni() {
-	GetProfileStringW(_T("font"),_T("name"),_T("Digital"),CGlobal::font_name.GetBuffer(MAX_PATH), MAX_PATH);
-	GetProfileStringW(_T("font"), _T("size"), _T("12"), CGlobal::font_size.GetBuffer(MAX_PATH), MAX_PATH);
-	CGlobal::font_autoajust = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("autosize"), 1));
-	CGlobal::font_bold = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("bold"), 0));
-	CGlobal::font_italic = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("italic"), 0));
-	CGlobal::font_unline = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("unline"), 0));
-	CGlobal::font_delline = CGlobal::IntToBool(GetProfileIntW(_T("font"), _T("delline"), 0));
+	CGlobal::font_name=theApp.GetProfileStringW(_T("font"),_T("name"),_T("宋体"));
+	CGlobal::font_size=theApp.GetProfileStringW(_T("font"), _T("size"), _T("12"));
+	CGlobal::font_autoajust = CGlobal::IntToBool(theApp.GetProfileIntW(_T("font"), _T("autoajust"), 1));
+	CGlobal::font_bold = CGlobal::IntToBool(theApp.GetProfileIntW(_T("font"), _T("bold"), 0));
+	CGlobal::font_italic = CGlobal::IntToBool(theApp.GetProfileIntW(_T("font"), _T("italic"), 0));
+	CGlobal::font_unline = CGlobal::IntToBool(theApp.GetProfileIntW(_T("font"), _T("unline"), 0));
+	CGlobal::font_delline = CGlobal::IntToBool(theApp.GetProfileIntW(_T("font"), _T("delline"), 0));
 	CGlobal::text_color = theApp.GetProfileIntW(_T("color"), _T("text"), 0);
 	CGlobal::background_color = theApp.GetProfileIntW(_T("color"), _T("background"), 16776960);
 	int height= theApp.GetProfileIntW(_T("window"), _T("height"), 300);
@@ -57,13 +58,24 @@ void CAlarmClockDlg::LoadIni() {
 	::SetWindowPos(this->m_hWnd, NULL, left,top, width, height, NULL);
 	SetTimer(ID_TIMER, 1000, 0);
 	if (CGlobal::font_autoajust == true) {
-		SetTimer(99999, 500, NULL);
+		SetTimer(99999, 1000, NULL);
 	} else {
 		m_font.CreateFontW(_ttoi(CGlobal::font_size), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
 		m_time.SetFont(&m_font, true);
 	}
+	GetDlgItem(IDC_TIME)->InvalidateRect(NULL);
 }
-
+void CAlarmClockDlg::savewin() {
+	CRect rect;
+	GetClientRect(rect);
+	GetWindowRect(rect);
+	if (!this->IsIconic()) {
+		theApp.WriteProfileInt(_T("window"), _T("top"), rect.top);
+		theApp.WriteProfileInt(_T("window"), _T("left"), rect.left);
+		theApp.WriteProfileInt(_T("window"), _T("width"), rect.Width());
+		theApp.WriteProfileInt(_T("window"), _T("height"), rect.Height());
+	}
+}
 BOOL CAlarmClockDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -146,6 +158,7 @@ void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
 		GetClientRect(rect);
 		ChangeSize(IDC_TIME, rect.Height(), rect.Width());
 		CAlarmClockDlg::OnSize(0, rect.Width(), rect.Height());
+		KillTimer(99999);
 	}else{
 		m_times=CTime::GetCurrentTime();
 		m_time.SetWindowTextW(m_times.Format("%H : %M : %S"));
@@ -156,7 +169,9 @@ void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmClockDlg::On32772()
 {
 	SetShowDlg Mode;
-	if(Mode.DoModal()==1) LoadIni();
+	if (Mode.DoModal() == 1) 
+		savewin(); 
+		LoadIni();
 }
 
 void CAlarmClockDlg::OnStnDblclickTime()
@@ -173,17 +188,27 @@ void CAlarmClockDlg::OnStnDblclickTime()
 	}
 }
 
+
+
+HBRUSH CAlarmClockDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+	HBRUSH hbrBk;
+	// TODO:  在此更改 DC 的任何特性
+	if (pWnd->GetDlgCtrlID() == IDC_TIME)
+	{
+		pDC->SetTextColor(CGlobal::text_color);
+		hbrBk = ::CreateSolidBrush(CGlobal::background_color);
+		pDC->SetBkColor(CGlobal::background_color);
+		return hbrBk;
+	}
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	return hbr;
+}
+
 void CAlarmClockDlg::OnClose()
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	CRect rect;
-	GetClientRect(rect);
-	GetWindowRect(rect);
-	if (!this->IsIconic()){
-		theApp.WriteProfileInt(_T("window"),_T("top"), rect.top);
-		theApp.WriteProfileInt(_T("window"), _T("left"), rect.left);
-		theApp.WriteProfileInt(_T("window"), _T("width"), rect.Width());
-		theApp.WriteProfileInt(_T("window"), _T("height"), rect.Height());
-	}
+	savewin();
 	CDialogEx::OnClose();
 }
