@@ -15,12 +15,15 @@
 #define IDC_BGCOLOR                     1003
 #define IDC_CHECK1                      1004
 #define IDC_AUTOAJUSTCHK                1004
-#define IDC_BGCOLOR2                    1005
 #define IDC_TEXTCOLOR                   1005
 #define IDC_CHECK5                      1015
 #define IDC_SETFONTBTN                  1018
 #define IDC_OKBTN                       1019
 #define IDC_CANBTN                      1020
+#define IDC_EDIT1                       1021
+#define IDC_FMT                         1021
+#define IDC_EXAMPLE                     1022
+#define IDC_DEFAULTBTN                  1023
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -34,7 +37,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        141
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

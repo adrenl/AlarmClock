@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CGlobal.h"
 bool CGlobal::showtitle = TRUE;
+CString CGlobal::format;
 CString CGlobal::font_name;
 CString CGlobal::font_size;
 bool CGlobal::font_autoajust;

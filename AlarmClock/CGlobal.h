@@ -6,6 +6,7 @@ public:
 	virtual ~CGlobal();
 public:
 	static bool showtitle;
+	static CString format;
 	static CString font_name;
 	static CString font_size;
 	static bool font_autoajust;

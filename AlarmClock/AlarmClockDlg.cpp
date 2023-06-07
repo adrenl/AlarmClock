@@ -36,12 +36,15 @@ BEGIN_MESSAGE_MAP(CAlarmClockDlg, CDialogEx)
 	ON_STN_DBLCLK(IDC_TIME, &CAlarmClockDlg::OnStnDblclickTime)
 	ON_WM_CLOSE()
 	ON_WM_CTLCOLOR()
+	ON_COMMAND(ID_32773, &CAlarmClockDlg::On32773)
+	ON_COMMAND(ID_32776, &CAlarmClockDlg::On32776)
 END_MESSAGE_MAP()
 
 
 // CAlarmClockDlg 消息处理程序
 
 void CAlarmClockDlg::LoadIni() {
+	CGlobal::format = theApp.GetProfileStringW(_T("time"), _T("format"), _T("%H : %M : %S"));
 	CGlobal::font_name=theApp.GetProfileStringW(_T("font"),_T("name"),_T("宋体"));
 	CGlobal::font_size=theApp.GetProfileStringW(_T("font"), _T("size"), _T("12"));
 	CGlobal::font_autoajust = CGlobal::IntToBool(theApp.GetProfileIntW(_T("font"), _T("autoajust"), 1));
@@ -58,7 +61,7 @@ void CAlarmClockDlg::LoadIni() {
 	::SetWindowPos(this->m_hWnd, NULL, left,top, width, height, NULL);
 	SetTimer(ID_TIMER, 1000, 0);
 	if (CGlobal::font_autoajust == true) {
-		SetTimer(99999, 1000, NULL);
+		SetTimer(99999, 1005, NULL);
 	} else {
 		m_font.CreateFontW(_ttoi(CGlobal::font_size), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
 		m_time.SetFont(&m_font, true);
@@ -74,6 +77,19 @@ void CAlarmClockDlg::savewin() {
 		theApp.WriteProfileInt(_T("window"), _T("left"), rect.left);
 		theApp.WriteProfileInt(_T("window"), _T("width"), rect.Width());
 		theApp.WriteProfileInt(_T("window"), _T("height"), rect.Height());
+	}
+}
+void CAlarmClockDlg::AjustTimeStatic(int cx,int cy) {
+	if (GetDlgItem(IDC_TIME) != NULL && CGlobal::font_autoajust == TRUE) {
+		if (m_font.m_hObject) m_font.DeleteObject();
+		int Length;
+		CString con;
+		m_time.GetWindowTextW(con);
+		Length = con.GetLength();
+		if (Length == 0) return;
+		//m_font.CreateFontW(((cx + cy) * 0.13), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
+		m_font.CreateFontW(cy , cx / Length, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
+		m_time.SetFont(&m_font, TRUE);
 	}
 }
 BOOL CAlarmClockDlg::OnInitDialog()
@@ -144,11 +160,7 @@ void CAlarmClockDlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 	if (nType == SIZE_MINIMIZED) return;
 	ChangeSize(IDC_TIME, cx, cy);
-	if (GetDlgItem(IDC_TIME) != NULL && CGlobal::font_autoajust==TRUE) {
-		if (m_font.m_hObject) m_font.DeleteObject();
-		m_font.CreateFontW(((cx+cy)*0.13), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
-		m_time.SetFont(&m_font, TRUE);
-	}
+	AjustTimeStatic(cx, cy);
 }
 
 void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
@@ -158,21 +170,14 @@ void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
 		GetClientRect(rect);
 		ChangeSize(IDC_TIME, rect.Height(), rect.Width());
 		CAlarmClockDlg::OnSize(0, rect.Width(), rect.Height());
+		AjustTimeStatic(rect.Width(), rect.Height());
 		KillTimer(99999);
-	}else{
-		m_times=CTime::GetCurrentTime();
-		m_time.SetWindowTextW(m_times.Format("%H : %M : %S"));
-		CDialogEx::OnTimer(nIDEvent);
 	}
+	m_times=CTime::GetCurrentTime();
+	m_time.SetWindowTextW(m_times.Format(CGlobal::format));
+	CDialogEx::OnTimer(nIDEvent);
 }
 
-void CAlarmClockDlg::On32772()
-{
-	SetShowDlg Mode;
-	if (Mode.DoModal() == 1) 
-		savewin(); 
-		LoadIni();
-}
 
 void CAlarmClockDlg::OnStnDblclickTime()
 {
@@ -211,4 +216,27 @@ void CAlarmClockDlg::OnClose()
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	savewin();
 	CDialogEx::OnClose();
+}
+
+void CAlarmClockDlg::On32773()
+{
+	SetFormatDlg Mode;
+	if(Mode.DoModal()==1){
+		savewin();
+		LoadIni();
+	}
+}
+
+void CAlarmClockDlg::On32772()
+{
+	SetShowDlg Mode;
+	if (Mode.DoModal() == 1) {
+		savewin();
+		LoadIni();
+	}
+}
+
+void CAlarmClockDlg::On32776()
+{
+	MessageBox(L"AlarmClock", L"关于", MB_ICONINFORMATION);
 }

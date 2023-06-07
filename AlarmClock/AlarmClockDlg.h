@@ -2,6 +2,7 @@
 //
 #pragma once
 #include "SetShowDlg.h"
+#include "SetFormatDlg.h"
 // CAlarmClockDlg 对话框
 class CAlarmClockDlg : public CDialogEx
 {
@@ -34,6 +35,9 @@ public:
 	afx_msg void OnStnDblclickTime();
 	void LoadIni();
 	void savewin();
+	void AjustTimeStatic(int cx, int cy);
 	afx_msg void OnClose();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void On32773();
+	afx_msg void On32776();
 };
