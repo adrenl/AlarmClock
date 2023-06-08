@@ -220,6 +220,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmClock.ico" />
+    <Image Include="res\big.ico" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

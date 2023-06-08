@@ -18,6 +18,8 @@ CAlarmClockDlg::CAlarmClockDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ALARMCLOCK_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_big = AfxGetApp()->LoadIcon(IDI_BIG);
+	m_small = AfxGetApp()->LoadIcon(IDI_SMALL);
 }
 
 void CAlarmClockDlg::DoDataExchange(CDataExchange* pDX)
@@ -103,8 +105,8 @@ void CAlarmClockDlg::AjustTimeStatic(int cx,int cy) {
 BOOL CAlarmClockDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
+	SetIcon(m_big, TRUE);
+	SetIcon(m_small, FALSE);
 
 	// TODO: 在此添加额外的初始化代码
 
@@ -194,8 +196,6 @@ void CAlarmClockDlg::OnStnDblclickTime()
 		::SetWindowPos(this->m_hWnd, NULL, 0, 0, 0, 0,SWP_NOSIZE| SWP_NOMOVE| SWP_NOZORDER| SWP_NOACTIVATE| SWP_FRAMECHANGED);
 	}
 }
-
-
 
 HBRUSH CAlarmClockDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {

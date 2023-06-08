@@ -10,6 +10,9 @@
 #define IDD_SETAAC                      134
 #define IDD_SETCAA                      134
 #define IDD_SETSHOW                     138
+#define IDI_BIG                         146
+#define IDI_ICON2                       147
+#define IDI_SMALL                       147
 #define IDC_TIME                        1000
 #define IDC_MFCCOLORBUTTON1             1002
 #define IDC_MFCCOLORBUTTON2             1003
@@ -43,7 +46,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        141
+#define _APS_NEXT_RESOURCE_VALUE        148
 #define _APS_NEXT_COMMAND_VALUE         32777
 #define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           101

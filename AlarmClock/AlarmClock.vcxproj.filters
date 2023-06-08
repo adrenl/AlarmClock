@@ -83,5 +83,14 @@
     <Image Include="res\AlarmClock.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\icon1.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\big.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\small.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
