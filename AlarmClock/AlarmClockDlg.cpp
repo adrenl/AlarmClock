@@ -1,5 +1,4 @@
-﻿
-// AlarmClockDlg.cpp: 实现文件
+﻿// AlarmClockDlg.cpp: 实现文件
 //
 
 #include "pch.h"
@@ -38,11 +37,9 @@ BEGIN_MESSAGE_MAP(CAlarmClockDlg, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_COMMAND(ID_32773, &CAlarmClockDlg::On32773)
 	ON_COMMAND(ID_32776, &CAlarmClockDlg::On32776)
+	ON_COMMAND(ID_32771, &CAlarmClockDlg::On32771)
 END_MESSAGE_MAP()
-
-
 // CAlarmClockDlg 消息处理程序
-
 void CAlarmClockDlg::LoadIni() {
 	CGlobal::format = theApp.GetProfileStringW(_T("time"), _T("format"), _T("%H : %M : %S"));
 	CGlobal::font_name=theApp.GetProfileStringW(_T("font"),_T("name"),_T("宋体"));
@@ -54,6 +51,18 @@ void CAlarmClockDlg::LoadIni() {
 	CGlobal::font_delline = CGlobal::IntToBool(theApp.GetProfileIntW(_T("font"), _T("delline"), 0));
 	CGlobal::text_color = theApp.GetProfileIntW(_T("color"), _T("text"), 0);
 	CGlobal::background_color = theApp.GetProfileIntW(_T("color"), _T("background"), 16776960);
+	CGlobal::clarm_at_hour = CGlobal::IntToBool(theApp.GetProfileIntW(_T("time"), _T("clarm_at_hour"), 0));
+	CGlobal::clarm_at_half_hour = CGlobal::IntToBool(theApp.GetProfileIntW(_T("time"), _T("clarm_at_half_hour"), 0));
+	CString Now;
+	int Thish;
+	int Thism;
+	for (int j = 0; j< 4; j++) {
+		Now.Format(_T("%d"), j);
+		Thish=theApp.GetProfileIntW(_T("time"), _T("alarm_h_"+Now), 0);
+		Thism = theApp.GetProfileIntW(_T("time"), _T("alarm_m_" + Now), 0);
+		CGlobal::AlarmTime[j] = CTime(2020,1,1,Thish,Thism,0);
+		CGlobal::AlarmTimeEnable[j] = CGlobal::IntToBool(theApp.GetProfileIntW(_T("time"), _T("alarm_enable_"+Now), 0));
+	}
 	int height= theApp.GetProfileIntW(_T("window"), _T("height"), 300);
 	int width= theApp.GetProfileIntW(_T("window"), _T("width"), 300);
 	int top = theApp.GetProfileIntW(_T("window"), _T("top"), 100);
@@ -87,46 +96,35 @@ void CAlarmClockDlg::AjustTimeStatic(int cx,int cy) {
 		m_time.GetWindowTextW(con);
 		Length = con.GetLength();
 		if (Length == 0) return;
-		//m_font.CreateFontW(((cx + cy) * 0.13), 0, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
-		m_font.CreateFontW(cy , cx / Length, 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
+		m_font.CreateFontW((cx+cy)/Length, 0 , 0, 0, (CGlobal::font_bold == TRUE ? FW_BOLD : 0), CGlobal::font_italic, CGlobal::font_unline, CGlobal::font_delline, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, CGlobal::font_name);
 		m_time.SetFont(&m_font, TRUE);
 	}
 }
 BOOL CAlarmClockDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
-	// 设置此对话框的图标。  当应用程序主窗口不是对话框时，框架将自动
-	//  执行此操作
-	SetIcon(m_hIcon, TRUE);			// 设置大图标
-	SetIcon(m_hIcon, FALSE);		// 设置小图标
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
 	// TODO: 在此添加额外的初始化代码
-	LoadIni();
-	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
-}
 
-// 如果向对话框添加最小化按钮，则需要下面的代码
-//  来绘制该图标。  对于使用文档/视图模型的 MFC 应用程序，
-//  这将由框架自动完成。
+	LoadIni();
+	return TRUE;
+}
 
 void CAlarmClockDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 用于绘制的设备上下文
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
-		// 使图标在工作区矩形中居中
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// 绘制图标
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -135,8 +133,6 @@ void CAlarmClockDlg::OnPaint()
 	}
 }
 
-//当用户拖动最小化窗口时系统调用此函数取得光标
-//显示。
 HCURSOR CAlarmClockDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -175,6 +171,12 @@ void CAlarmClockDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 	m_times=CTime::GetCurrentTime();
 	m_time.SetWindowTextW(m_times.Format(CGlobal::format));
+	for (int a = 0; a < 4; a++) {
+		if (CGlobal::AlarmTime[a].GetHour() == m_times.GetHour() && CGlobal::AlarmTime[a].GetMinute() == m_times.GetMinute() && m_times.GetSecond() == 0 && CGlobal::AlarmTimeEnable[a]==TRUE) {
+			MessageBeep(MB_ICONINFORMATION);
+		}
+	}
+	if(((m_times.GetMinute()==0 && CGlobal::clarm_at_hour == TRUE) || (m_times.GetMinute() == 30 && CGlobal::clarm_at_half_hour == TRUE)) && m_times.GetSecond() == 0) MessageBeep(MB_ICONINFORMATION);
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -199,7 +201,6 @@ HBRUSH CAlarmClockDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 	HBRUSH hbrBk;
-	// TODO:  在此更改 DC 的任何特性
 	if (pWnd->GetDlgCtrlID() == IDC_TIME)
 	{
 		pDC->SetTextColor(CGlobal::text_color);
@@ -207,13 +208,11 @@ HBRUSH CAlarmClockDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		pDC->SetBkColor(CGlobal::background_color);
 		return hbrBk;
 	}
-	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;
 }
 
 void CAlarmClockDlg::OnClose()
 {
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	savewin();
 	CDialogEx::OnClose();
 }
@@ -238,5 +237,23 @@ void CAlarmClockDlg::On32772()
 
 void CAlarmClockDlg::On32776()
 {
-	MessageBox(L"AlarmClock", L"关于", MB_ICONINFORMATION);
+	MessageBeep(MB_ICONINFORMATION);
+	MSGBOXPARAMS msgBox;
+	msgBox.cbSize = sizeof(MSGBOXPARAMS);
+	msgBox.dwStyle = MB_USERICON;
+	msgBox.hInstance = AfxGetApp()->m_hInstance;
+	msgBox.hwndOwner = NULL;
+	msgBox.lpszCaption = _T("关于");
+	msgBox.lpszIcon = MAKEINTRESOURCE(IDR_MAINFRAME);
+	msgBox.lpszText = _T("AlarmClock");
+	MessageBoxIndirect(&msgBox);
+}
+
+void CAlarmClockDlg::On32771()
+{
+	SetCAADlg Mode;
+	if (Mode.DoModal() == 1) {
+		savewin();
+		LoadIni();
+	}
 }

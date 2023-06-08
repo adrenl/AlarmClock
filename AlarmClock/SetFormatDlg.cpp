@@ -68,5 +68,5 @@ void SetFormatDlg::OnBnClickedOkbtn()
 
 void SetFormatDlg::OnBnClickedDefaultbtn()
 {
-	m_fmt.SetWindowTextW(L"%H : %M : %S");
+	m_fmt.SetWindowTextW(_T("%H : %M : %S"));
 }

@@ -11,6 +11,10 @@ bool CGlobal::font_unline;
 bool CGlobal::font_delline;
 COLORREF CGlobal::text_color;
 COLORREF CGlobal::background_color;
+CTime CGlobal::AlarmTime[4];
+bool CGlobal::AlarmTimeEnable[4];
+bool CGlobal::clarm_at_hour;
+bool CGlobal::clarm_at_half_hour;
 CGlobal::CGlobal()
 {
 }

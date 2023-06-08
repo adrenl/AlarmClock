@@ -17,6 +17,10 @@ public:
 	static COLORREF text_color;
 	static COLORREF background_color;
 	static CString inipath;
+	static CTime AlarmTime[4];
+	static bool AlarmTimeEnable[4];
 	static int BoolToInt(bool v);
 	static bool IntToBool(int v);
+	static bool clarm_at_hour;
+	static bool clarm_at_half_hour;
 };

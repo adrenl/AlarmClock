@@ -61,7 +61,7 @@ void SetShowDlg::OnBnClickedCanbtn()
 void SetShowDlg::OnBnClickedOkbtn()
 {
 	CString Size;
-	Size.Format(L"%d", SetShowDlg::slf.lfHeight);
+	Size.Format(_T("%d"), SetShowDlg::slf.lfHeight);
 	theApp.WriteProfileStringW(_T("font"), _T("size"),Size);
 	theApp.WriteProfileInt(_T("font"), _T("bold"), CGlobal::BoolToInt(SetShowDlg::slf.lfWeight == 700 ? TRUE : FALSE));
 	theApp.WriteProfileInt(_T("font"), _T("italic"), CGlobal::BoolToInt(SetShowDlg::slf.lfItalic));
